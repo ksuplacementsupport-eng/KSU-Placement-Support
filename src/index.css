@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-marcellus {
+  font-family: 'Marcellus', serif;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+/* Subtle Indian rangoli/mandala pattern background utilities */
+.bg-mandala-subtle {
+  background-image: radial-gradient(#F36B12 0.75px, transparent 0.75px), radial-gradient(#0B1F45 0.75px, #FFF7E9 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+}

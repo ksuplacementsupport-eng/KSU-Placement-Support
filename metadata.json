@@ -1,0 +1,6 @@
+{
+  "name": "KSU Placement Support",
+  "description": "Official website for KSU Placement Support. Recruitment, job placement, candidate screening, and HR training support across Raipur, Chhattisgarh and all over India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
