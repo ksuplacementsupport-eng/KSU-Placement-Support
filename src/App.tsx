@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -15,6 +15,9 @@ import { TestimonialsNotice } from './components/TestimonialsNotice';
 import { FAQ } from './components/FAQ';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
+import { GoogleSheetsManager } from './components/GoogleSheetsManager';
+import { FileSpreadsheet } from 'lucide-react';
+import { getQueuedSubmissions } from './services/googleSheets';
 import {
   HiringModal,
   CandidateModal,
@@ -35,6 +38,18 @@ export default function App() {
   const [lightboxAsset, setLightboxAsset] = useState<'poster' | 'card' | 'logo' | null>(null);
 
   const [policyModalTab, setPolicyModalTab] = useState<'privacy' | 'terms' | null>(null);
+
+  const [isGoogleSheetsOpen, setIsGoogleSheetsOpen] = useState(false);
+  const [queueCount, setQueueCount] = useState(0);
+
+  useEffect(() => {
+    const updateQueue = () => {
+      setQueueCount(getQueuedSubmissions().length);
+    };
+    updateQueue();
+    const interval = setInterval(updateQueue, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleOpenHiring = (role?: string) => {
     setHiringInitialRole(role || '');
@@ -64,6 +79,7 @@ export default function App() {
       <Header
         onOpenHiringModal={() => handleOpenHiring()}
         onOpenCandidateModal={() => handleOpenCandidate()}
+        onOpenGoogleSheets={() => setIsGoogleSheetsOpen(true)}
       />
 
       {/* Main Content Sections */}
@@ -120,19 +136,41 @@ export default function App() {
       <Footer
         onOpenPolicyModal={handleOpenPolicy}
         onOpenAssetViewer={handleOpenAssetViewer}
+        onOpenGoogleSheets={() => setIsGoogleSheetsOpen(true)}
       />
+
+      {/* Floating Google Sheets Quick Sync Badge */}
+      <div className="fixed bottom-4 right-4 z-30">
+        <button
+          onClick={() => setIsGoogleSheetsOpen(true)}
+          className="bg-[#0B1F45] text-white hover:bg-[#F36B12] border border-emerald-400/50 shadow-xl px-3.5 py-2 rounded-full flex items-center gap-2 text-xs font-bold transition-all hover:scale-105 cursor-pointer"
+          title="Open Google Sheets Integration Panel"
+        >
+          <div className="relative">
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            {queueCount > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[9px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
+                {queueCount}
+              </span>
+            )}
+          </div>
+          <span className="hidden sm:inline">Google Sheet Sync</span>
+        </button>
+      </div>
 
       {/* Global Modals & Lightboxes */}
       <HiringModal
         isOpen={isHiringOpen}
         onClose={() => setIsHiringOpen(false)}
         initialRole={hiringInitialRole}
+        onOpenGoogleSheets={() => setIsGoogleSheetsOpen(true)}
       />
 
       <CandidateModal
         isOpen={isCandidateOpen}
         onClose={() => setIsCandidateOpen(false)}
         initialDomain={candidateInitialDomain}
+        onOpenGoogleSheets={() => setIsGoogleSheetsOpen(true)}
       />
 
       <TrainingModal
@@ -150,6 +188,12 @@ export default function App() {
         isOpen={policyModalTab !== null}
         onClose={() => setPolicyModalTab(null)}
         tab={policyModalTab || 'privacy'}
+      />
+
+      {/* Google Sheets Management Modal */}
+      <GoogleSheetsManager
+        isOpen={isGoogleSheetsOpen}
+        onClose={() => setIsGoogleSheetsOpen(false)}
       />
     </div>
   );

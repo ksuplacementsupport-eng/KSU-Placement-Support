@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Menu, X, Phone, UserCheck, Briefcase } from 'lucide-react';
+import { Menu, X, Phone, UserCheck, Briefcase, FileSpreadsheet } from 'lucide-react';
 
 interface HeaderProps {
   onOpenHiringModal: () => void;
   onOpenCandidateModal: () => void;
+  onOpenGoogleSheets: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenHiringModal,
   onOpenCandidateModal,
+  onOpenGoogleSheets,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -58,6 +60,14 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Zone 3: Actions */}
           <div className="hidden sm:flex items-center gap-2.5 shrink-0">
+            <button
+              onClick={onOpenGoogleSheets}
+              title="Google Sheets Sync & Registry"
+              className="px-2.5 py-2 text-xs font-semibold text-emerald-300 hover:text-white border border-emerald-500/50 hover:bg-emerald-500/10 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden xl:inline">Google Sheet</span>
+            </button>
             <button
               onClick={onOpenCandidateModal}
               className="px-3.5 py-2 text-xs font-semibold text-[#FFF7E9] hover:text-white border border-[#D8AC55]/50 hover:border-[#D8AC55] rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5"
@@ -131,6 +141,17 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Hire Talent</span>
             </button>
           </div>
+
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenGoogleSheets();
+            }}
+            className="w-full py-2 px-3 text-xs font-semibold text-emerald-300 border border-emerald-500/40 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center justify-center gap-2"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            <span>Google Sheets Integration & Sync</span>
+          </button>
 
           <div className="pt-2 text-center text-xs text-amber-200/80">
             <a href="tel:6232506700" className="inline-flex items-center gap-1 text-[#F36B12] font-semibold">

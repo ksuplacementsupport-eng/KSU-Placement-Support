@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, Send, Building2, User, Phone, Mail, MapPin, Briefcase, Calendar, ShieldCheck, FileText, ExternalLink, AlertCircle } from 'lucide-react';
+import { X, CheckCircle, Send, Building2, User, Phone, Mail, MapPin, Briefcase, Calendar, ShieldCheck, FileText, ExternalLink, AlertCircle, FileSpreadsheet } from 'lucide-react';
 import { HiringRequirementFormData, CandidateRegistrationFormData, TrainingEnquiryFormData } from '../types';
+import {
+  saveCandidateToSheet,
+  saveEmployerToSheet,
+  saveTrainingToSheet,
+  getStoredSpreadsheetId,
+} from '../services/googleSheets';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenGoogleSheets?: () => void;
 }
 
 // 1. HIRING REQUIREMENT MODAL (EMPLOYERS)
-export const HiringModal: React.FC<ModalProps & { initialRole?: string }> = ({ isOpen, onClose, initialRole = '' }) => {
+export const HiringModal: React.FC<ModalProps & { initialRole?: string }> = ({ isOpen, onClose, onOpenGoogleSheets, initialRole = '' }) => {
   const [formData, setFormData] = useState<HiringRequirementFormData>({
     companyName: '',
     contactPerson: '',
@@ -28,17 +35,27 @@ export const HiringModal: React.FC<ModalProps & { initialRole?: string }> = ({ i
 
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.contactPerson.trim() || !formData.mobileNumber.trim() || !formData.jobRole.trim()) {
       setErrorMsg('Please complete all required fields (Company, Contact Person, Mobile, and Job Role).');
       return;
     }
     setErrorMsg('');
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      await saveEmployerToSheet(formData);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Error saving to sheet:', err);
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetAndClose = () => {
@@ -326,10 +343,11 @@ export const CandidateModal: React.FC<ModalProps & { initialDomain?: string }> =
 
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName.trim() || !formData.phone.trim() || !formData.highestQualification.trim()) {
       setErrorMsg('Please fill in your Full Name, Mobile Number, and Highest Qualification.');
@@ -340,7 +358,16 @@ export const CandidateModal: React.FC<ModalProps & { initialDomain?: string }> =
       return;
     }
     setErrorMsg('');
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      await saveCandidateToSheet(formData);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Error saving candidate to sheet:', err);
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetAndClose = () => {
@@ -616,8 +643,13 @@ export const TrainingModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await saveTrainingToSheet(formData);
+    } catch (err) {
+      console.error('Error saving training to sheet:', err);
+    }
     setSubmitted(true);
   };
 

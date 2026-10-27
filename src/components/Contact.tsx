@@ -11,8 +11,10 @@ import {
   CheckCircle2,
   PhoneCall,
   Clock,
-  Sparkles
+  Sparkles,
+  FileSpreadsheet
 } from 'lucide-react';
+import { saveQuickInquiryToSheet } from '../services/googleSheets';
 
 interface ContactProps {
   onOpenHiringModal: () => void;
@@ -31,9 +33,14 @@ export const Contact: React.FC<ContactProps> = ({
   const [quickMessage, setQuickMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
 
-  const handleQuickSubmit = (e: React.FormEvent) => {
+  const handleQuickSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!quickName.trim() || !quickPhone.trim()) return;
+    try {
+      await saveQuickInquiryToSheet(quickName, quickPhone, quickCategory, quickMessage);
+    } catch (err) {
+      console.error('Error saving quick inquiry to sheet:', err);
+    }
     setIsSent(true);
   };
 

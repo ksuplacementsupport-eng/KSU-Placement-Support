@@ -4,9 +4,10 @@ import { Phone, Mail, MapPin, ShieldCheck, Heart, ArrowUp } from 'lucide-react';
 interface FooterProps {
   onOpenPolicyModal: (tab: 'privacy' | 'terms') => void;
   onOpenAssetViewer: (type: 'poster' | 'card' | 'logo') => void;
+  onOpenGoogleSheets?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenPolicyModal, onOpenAssetViewer }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenPolicyModal, onOpenAssetViewer, onOpenGoogleSheets }) => {
   const currentYear = new Date().getFullYear();
 
   const scrollToTop = () => {
@@ -91,6 +92,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicyModal, onOpenAssetVi
               <li>
                 <a href="#contact" className="hover:text-[#F36B12] transition-colors">Contact Us</a>
               </li>
+              {onOpenGoogleSheets && (
+                <li>
+                  <button
+                    onClick={onOpenGoogleSheets}
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Google Sheets Integration</span>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
